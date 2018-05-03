@@ -21,14 +21,13 @@
  * limitations under the License.
  */
 
-declare const google: any;
-
+import { } from "googlemaps";
 
 /**
  * RichMarker Anchor positions
  * @enum {number}
  */
-const RichMarkerPosition = {
+export const RichMarkerPosition = {
   'TOP_LEFT': 1,
   'TOP': 2,
   'TOP_RIGHT': 3,
@@ -38,13 +37,15 @@ const RichMarkerPosition = {
   'BOTTOM_LEFT': 7,
   'BOTTOM': 8,
   'BOTTOM_RIGHT': 9
-};
-
-export class RichMarker {
-  constructor(googleMapsApi: any, options: any) {
-    return new _RichMarker(googleMapsApi, options);
-  }
 }
+
+// export class RichMarker {
+//   constructor(googleMapsApi: any, options: any) {
+//     console.log('all the....  ttttttt testing!!!!!!');
+//     return _CreateRichMarker(googleMapsApi, options);
+//   }
+// }
+
 
 /**
  * A RichMarker that allows any HTML/DOM to be added to a map and be draggable.
@@ -53,50 +54,60 @@ export class RichMarker {
  * @extends {google.maps.OverlayView}
  * @constructor
  */
-function _RichMarker(google, opt_options) {
-  var options = opt_options || {};
+export class RichMarker extends google.maps.OverlayView {
 
-  /**
-   * @type {boolean}
-   * @private
-   */
-  this.ready_ = false;
+  public dragging_;
+  public ready_;
+  public markerWrapper_;
+  public markerContent_;
+  public mapDraggable_;
+  public mouseX_;
+  public mouseY_;
+  public draggableListener_;
+  public draggingListeners_;
+  
+  constructor(private readonly google, private opt_options){
+    super()
 
-  /**
-   * @type {boolean}
-   * @private
-   */
-  this.dragging_ = false;
+      /**
+       * @type {boolean}
+       * @private
+       */
+      this.ready_ = false;
 
-  if (opt_options['visible'] == undefined) {
-    opt_options['visible'] = true;
+      /**
+       * @type {boolean}
+       * @private
+       */
+      this.dragging_ = false;
+  
+      const options = this.opt_options || {}
+
+      if (opt_options['visible'] == undefined) {
+        opt_options['visible'] = true;
+      }
+    
+      if (opt_options['shadow'] == undefined) {
+        opt_options['shadow'] = '7px -3px 5px rgba(88,88,88,0.7)';
+      }
+    
+      if (opt_options['anchor'] == undefined) {
+        opt_options['anchor'] = RichMarkerPosition['BOTTOM'];
+      }
+    
+      this.setValues(options);
+
   }
-
-  if (opt_options['shadow'] == undefined) {
-    opt_options['shadow'] = '7px -3px 5px rgba(88,88,88,0.7)';
-  }
-
-  if (opt_options['anchor'] == undefined) {
-    opt_options['anchor'] = RichMarkerPosition['BOTTOM'];
-  }
-
-  this.setValues(options);
-
-
-  _RichMarker.prototype = new google.maps.OverlayView();
-  window['RichMarker'] = _RichMarker;
-
 
   /**
    * Returns the current visibility state of the marker.
    *
    * @return {boolean} The visiblity of the marker.
    */
-  _RichMarker.prototype.getVisible = function () {
+  getVisible () {
     return /** @type {boolean} */ (this.get('visible'));
-  };
+  }
 
-  _RichMarker.prototype['getVisible'] = _RichMarker.prototype.getVisible;
 
 
   /**
@@ -104,22 +115,20 @@ function _RichMarker(google, opt_options) {
    *
    * @param {boolean} visible The visiblilty of the marker.
    */
-  _RichMarker.prototype.setVisible = function (visible) {
+  setVisible (visible) {
     this.set('visible', visible);
-  };
-  _RichMarker.prototype['setVisible'] = _RichMarker.prototype.setVisible;
+  }
 
 
   /**
    *  The visible changed event.
    */
-  _RichMarker.prototype.visible_changed = function () {
+  visible_changed () {
     if (this.ready_) {
       this.markerWrapper_.style['display'] = this.getVisible() ? '' : 'none';
       this.draw();
     }
-  };
-  _RichMarker.prototype['visible_changed'] = _RichMarker.prototype.visible_changed;
+  }
 
 
   /**
@@ -127,10 +136,9 @@ function _RichMarker(google, opt_options) {
    *
    * @param {boolean} flat If the marker is to be flat or not.
    */
-  _RichMarker.prototype.setFlat = function (flat) {
+  setFlat (flat) {
     this.set('flat', !!flat);
-  };
-  _RichMarker.prototype['setFlat'] = _RichMarker.prototype.setFlat;
+  }
 
 
   /**
@@ -138,10 +146,9 @@ function _RichMarker(google, opt_options) {
    *
    * @return {boolean} True the marker is flat.
    */
-  _RichMarker.prototype.getFlat = function () {
+  getFlat () {
     return /** @type {boolean} */ (this.get('flat'));
-  };
-  _RichMarker.prototype['getFlat'] = _RichMarker.prototype.getFlat;
+  }
 
 
   /**
@@ -149,10 +156,9 @@ function _RichMarker(google, opt_options) {
    *
    * @return {Number} The width of the marker.
    */
-  _RichMarker.prototype.getWidth = function () {
+  getWidth () {
     return /** @type {Number} */ (this.get('width'));
-  };
-  _RichMarker.prototype['getWidth'] = _RichMarker.prototype.getWidth;
+  }
 
 
   /**
@@ -160,10 +166,9 @@ function _RichMarker(google, opt_options) {
    *
    * @return {Number} The height of the marker.
    */
-  _RichMarker.prototype.getHeight = function () {
+  getHeight () {
     return /** @type {Number} */ (this.get('height'));
-  };
-  _RichMarker.prototype['getHeight'] = _RichMarker.prototype.getHeight;
+  }
 
 
   /**
@@ -171,11 +176,10 @@ function _RichMarker(google, opt_options) {
    *
    * @param {string} shadow The box shadow to set.
    */
-  _RichMarker.prototype.setShadow = function (shadow) {
+  setShadow (shadow) {
     this.set('shadow', shadow);
     this.flat_changed();
-  };
-  _RichMarker.prototype['setShadow'] = _RichMarker.prototype.setShadow;
+  }
 
 
   /**
@@ -183,16 +187,15 @@ function _RichMarker(google, opt_options) {
    *
    * @return {string} The box shadow.
    */
-  _RichMarker.prototype.getShadow = function () {
+  getShadow () {
     return /** @type {string} */ (this.get('shadow'));
-  };
-  _RichMarker.prototype['getShadow'] = _RichMarker.prototype.getShadow;
+  }
 
 
   /**
    * Flat changed event.
    */
-  _RichMarker.prototype.flat_changed = function () {
+  flat_changed () {
     if (!this.ready_) {
       return;
     }
@@ -201,8 +204,7 @@ function _RichMarker(google, opt_options) {
       this.markerWrapper_.style['webkitBoxShadow'] =
       this.markerWrapper_.style['MozBoxShadow'] =
       this.getFlat() ? '' : this.getShadow();
-  };
-  _RichMarker.prototype['flat_changed'] = _RichMarker.prototype.flat_changed;
+  }
 
 
   /**
@@ -210,10 +212,9 @@ function _RichMarker(google, opt_options) {
    *
    * @param {Number} index The index to set.
    */
-  _RichMarker.prototype.setZIndex = function (index) {
+  setZIndex (index) {
     this.set('zIndex', index);
-  };
-  _RichMarker.prototype['setZIndex'] = _RichMarker.prototype.setZIndex;
+  }
 
 
   /**
@@ -221,31 +222,28 @@ function _RichMarker(google, opt_options) {
    *
    * @return {Number} The zIndex of the marker.
    */
-  _RichMarker.prototype.getZIndex = function () {
+  getZIndex () {
     return /** @type {Number} */ (this.get('zIndex'));
-  };
-  _RichMarker.prototype['getZIndex'] = _RichMarker.prototype.getZIndex;
+  }
 
 
   /**
    * zIndex changed event.
    */
-  _RichMarker.prototype.zIndex_changed = function () {
+  zIndex_changed () {
     if (this.getZIndex() && this.ready_) {
       this.markerWrapper_.style.zIndex = this.getZIndex();
     }
-  };
-  _RichMarker.prototype['zIndex_changed'] = _RichMarker.prototype.zIndex_changed;
+  }
 
   /**
    * Whether the marker is draggable or not.
    *
    * @return {boolean} True if the marker is draggable.
    */
-  _RichMarker.prototype.getDraggable = function () {
+  getDraggable () {
     return /** @type {boolean} */ (this.get('draggable'));
-  };
-  _RichMarker.prototype['getDraggable'] = _RichMarker.prototype.getDraggable;
+  }
 
 
   /**
@@ -253,16 +251,15 @@ function _RichMarker(google, opt_options) {
    *
    * @param {boolean} draggable If the marker is draggable or not.
    */
-  _RichMarker.prototype.setDraggable = function (draggable) {
+  setDraggable (draggable) {
     this.set('draggable', !!draggable);
-  };
-  _RichMarker.prototype['setDraggable'] = _RichMarker.prototype.setDraggable;
+  }
 
 
   /**
    * Draggable property changed callback.
    */
-  _RichMarker.prototype.draggable_changed = function () {
+  draggable_changed () {
     if (this.ready_) {
       if (this.getDraggable()) {
         this.addDragging_(this.markerWrapper_);
@@ -270,20 +267,16 @@ function _RichMarker(google, opt_options) {
         this.removeDragListeners_();
       }
     }
-  };
-  _RichMarker.prototype['draggable_changed'] =
-    _RichMarker.prototype.draggable_changed;
-
+  }
 
   /**
    * Gets the postiton of the marker.
    *
    * @return {google.maps.LatLng} The position of the marker.
    */
-  _RichMarker.prototype.getPosition = function () {
+  getPosition () {
     return /** @type {google.maps.LatLng} */ (this.get('position'));
-  };
-  _RichMarker.prototype['getPosition'] = _RichMarker.prototype.getPosition;
+  }
 
 
   /**
@@ -291,31 +284,25 @@ function _RichMarker(google, opt_options) {
    *
    * @param {google.maps.LatLng} position The position to set.
    */
-  _RichMarker.prototype.setPosition = function (position) {
+  setPosition (position) {
     this.set('position', position);
-  };
-  _RichMarker.prototype['setPosition'] = _RichMarker.prototype.setPosition;
-
+  }
 
   /**
    * Position changed event.
    */
-  _RichMarker.prototype.position_changed = function () {
+  position_changed () {
     this.draw();
-  };
-  _RichMarker.prototype['position_changed'] =
-    _RichMarker.prototype.position_changed;
-
+  }
 
   /**
    * Gets the anchor.
    *
    * @return {google.maps.Size} The position of the anchor.
    */
-  _RichMarker.prototype.getAnchor = function () {
+  getAnchor () {
     return /** @type {google.maps.Size} */ (this.get('anchor'));
-  };
-  _RichMarker.prototype['getAnchor'] = _RichMarker.prototype.getAnchor;
+  }
 
 
   /**
@@ -323,19 +310,17 @@ function _RichMarker(google, opt_options) {
    *
    * @param {RichMarkerPosition|google.maps.Size} anchor The anchor to set.
    */
-  _RichMarker.prototype.setAnchor = function (anchor) {
+  setAnchor (anchor) {
     this.set('anchor', anchor);
-  };
-  _RichMarker.prototype['setAnchor'] = _RichMarker.prototype.setAnchor;
+  }
 
 
   /**
    * Anchor changed event.
    */
-  _RichMarker.prototype.anchor_changed = function () {
+  anchor_changed () {
     this.draw();
-  };
-  _RichMarker.prototype['anchor_changed'] = _RichMarker.prototype.anchor_changed;
+  }
 
 
   /**
@@ -345,7 +330,7 @@ function _RichMarker(google, opt_options) {
    * @return {Node} A HTML document fragment.
    * @private
    */
-  _RichMarker.prototype.htmlToDocumentFragment_ = function (htmlString) {
+  htmlToDocumentFragment_ (htmlString) {
     var tempDiv = document.createElement('DIV');
     tempDiv.innerHTML = htmlString;
     if (tempDiv.childNodes.length == 1) {
@@ -357,7 +342,7 @@ function _RichMarker(google, opt_options) {
       }
       return fragment;
     }
-  };
+  }
 
 
   /**
@@ -366,7 +351,7 @@ function _RichMarker(google, opt_options) {
    * @param {Node} node The node to remove all children from.
    * @private
    */
-  _RichMarker.prototype.removeChildren_ = function (node) {
+  removeChildren_ (node) {
     if (!node) {
       return;
     }
@@ -375,7 +360,7 @@ function _RichMarker(google, opt_options) {
     while (child = node.firstChild) {
       node.removeChild(child);
     }
-  };
+  }
 
 
   /**
@@ -383,10 +368,9 @@ function _RichMarker(google, opt_options) {
    *
    * @param {string|Node} content The content to set.
    */
-  _RichMarker.prototype.setContent = function (content) {
+  setContent (content) {
     this.set('content', content);
-  };
-  _RichMarker.prototype['setContent'] = _RichMarker.prototype.setContent;
+  }
 
 
   /**
@@ -394,16 +378,15 @@ function _RichMarker(google, opt_options) {
    *
    * @return {string|Node} The marker content.
    */
-  _RichMarker.prototype.getContent = function () {
+  getContent () {
     return /** @type {Node|string} */ (this.get('content'));
-  };
-  _RichMarker.prototype['getContent'] = _RichMarker.prototype.getContent;
+  }
 
 
   /**
    * Sets the marker content and adds loading events to images
    */
-  _RichMarker.prototype.content_changed = function () {
+  content_changed () {
     if (!this.markerContent_) {
       // Marker content area doesnt exist.
       return;
@@ -425,7 +408,7 @@ function _RichMarker(google, opt_options) {
         // so by calling preventDefault we stop this behaviour and allow the image
         // to be dragged around the map and now out of the browser and onto the
         // desktop.
-        google.maps.event.addDomListener(image, 'mousedown', function (e) {
+        this.google.maps.event.addDomListener(image, 'mousedown', function (e) {
           if (that.getDraggable()) {
             if (e.preventDefault) {
               e.preventDefault();
@@ -437,19 +420,18 @@ function _RichMarker(google, opt_options) {
         // Because we don't know the size of an image till it loads, add a
         // listener to the image load so the marker can resize and reposition
         // itself to be the correct height.
-        google.maps.event.addDomListener(image, 'load', function () {
+        this.google.maps.event.addDomListener(image, 'load', function () {
           that.draw();
         });
       }
 
-      google.maps.event.trigger(this, 'domready');
+      this.google.maps.event.trigger(this, 'domready');
     }
 
     if (this.ready_) {
       this.draw();
     }
-  };
-  _RichMarker.prototype['content_changed'] = _RichMarker.prototype.content_changed;
+  }
 
   /**
    * Sets the cursor.
@@ -457,7 +439,7 @@ function _RichMarker(google, opt_options) {
    * @param {string} whichCursor What cursor to show.
    * @private
    */
-  _RichMarker.prototype.setCursor_ = function (whichCursor) {
+  setCursor_ (whichCursor) {
     if (!this.ready_) {
       return;
     }
@@ -489,14 +471,14 @@ function _RichMarker(google, opt_options) {
     if (this.markerWrapper_.style.cursor != cursor) {
       this.markerWrapper_.style.cursor = cursor;
     }
-  };
+  }
 
   /**
    * Start dragging.
    *
    * @param {Event} e The event.
    */
-  _RichMarker.prototype.startDrag = function (e) {
+  startDrag (e) {
     if (!this.getDraggable()) {
       return;
     }
@@ -521,19 +503,19 @@ function _RichMarker(google, opt_options) {
       this.markerWrapper_['unselectable'] = 'on';
       this.markerWrapper_['onselectstart'] = function () {
         return false;
-      };
+      }
 
       this.addDraggingListeners_();
 
-      google.maps.event.trigger(this, 'dragstart');
+      this.google.maps.event.trigger(this, 'dragstart');
     }
-  };
+  }
 
 
   /**
    * Stop dragging.
    */
-  _RichMarker.prototype.stopDrag = function () {
+  stopDrag () {
     if (!this.getDraggable()) {
       return;
     }
@@ -548,16 +530,16 @@ function _RichMarker(google, opt_options) {
       this.markerWrapper_.style['KhtmlUserSelect'] = '';
       this.markerWrapper_.style['WebkitUserSelect'] = '';
       this.markerWrapper_['unselectable'] = 'off';
-      this.markerWrapper_['onselectstart'] = function () { };
+      this.markerWrapper_['onselectstart'] = function() { }
 
       this.removeDraggingListeners_();
 
       this.setCursor_('draggable');
-      google.maps.event.trigger(this, 'dragend');
+      this.google.maps.event.trigger(this, 'dragend');
 
       this.draw();
     }
-  };
+  }
 
 
   /**
@@ -565,7 +547,7 @@ function _RichMarker(google, opt_options) {
    *
    * @param {Event} e The event.
    */
-  _RichMarker.prototype.drag = function (e) {
+  drag (e) {
     if (!this.getDraggable() || !this.dragging_) {
       // This object isn't draggable or we have stopped dragging
       this.stopDrag();
@@ -587,13 +569,13 @@ function _RichMarker(google, opt_options) {
     var offset = this.getOffset_();
 
     // Set the position property and adjust for the anchor offset
-    var point = new google.maps.Point(left - offset.width, top - offset.height);
+    var point = new this.google.maps.Point(left - offset.width, top - offset.height);
     var projection = this.getProjection();
     this.setPosition(projection.fromDivPixelToLatLng(point));
 
     this.setCursor_('dragging');
-    google.maps.event.trigger(this, 'drag');
-  };
+    this.google.maps.event.trigger(this, 'drag');
+  }
 
 
   /**
@@ -601,13 +583,13 @@ function _RichMarker(google, opt_options) {
    *
    * @private
    */
-  _RichMarker.prototype.removeDragListeners_ = function () {
+  removeDragListeners_ () {
     if (this.draggableListener_) {
-      google.maps.event.removeListener(this.draggableListener_);
+      this.google.maps.event.removeListener(this.draggableListener_);
       delete this.draggableListener_;
     }
     this.setCursor_('');
-  };
+  }
 
 
   /**
@@ -616,65 +598,63 @@ function _RichMarker(google, opt_options) {
    * @param {Node} node The node to apply dragging to.
    * @private
    */
-  _RichMarker.prototype.addDragging_ = function (node) {
+  addDragging_ (node) {
     if (!node) {
       return;
     }
 
     var that = this;
     this.draggableListener_ =
-      google.maps.event.addDomListener(node, 'mousedown', function (e) {
+      this.google.maps.event.addDomListener(node, 'mousedown', function (e) {
         that.startDrag(e);
       });
 
     this.setCursor_('draggable');
-  };
-
+  }
 
   /**
    * Add dragging listeners.
    *
    * @private
    */
-  _RichMarker.prototype.addDraggingListeners_ = function () {
+  addDraggingListeners_ () {
     var that = this;
     if (this.markerWrapper_.setCapture) {
       this.markerWrapper_.setCapture(true);
       this.draggingListeners_ = [
-        google.maps.event.addDomListener(this.markerWrapper_, 'mousemove', function (e) {
+        this.google.maps.event.addDomListener(this.markerWrapper_, 'mousemove', function (e) {
           that.drag(e);
         }, true),
-        google.maps.event.addDomListener(this.markerWrapper_, 'mouseup', function () {
+        this.google.maps.event.addDomListener(this.markerWrapper_, 'mouseup', function () {
           that.stopDrag();
           that.markerWrapper_.releaseCapture();
         }, true)
       ];
     } else {
       this.draggingListeners_ = [
-        google.maps.event.addDomListener(window, 'mousemove', function (e) {
+        this.google.maps.event.addDomListener(window, 'mousemove', function (e) {
           that.drag(e);
         }, true),
-        google.maps.event.addDomListener(window, 'mouseup', function () {
+        this.google.maps.event.addDomListener(window, 'mouseup', function () {
           that.stopDrag();
         }, true)
       ];
     }
-  };
-
+  }
 
   /**
    * Remove dragging listeners.
    *
    * @private
    */
-  _RichMarker.prototype.removeDraggingListeners_ = function () {
+  removeDraggingListeners_ () {
     if (this.draggingListeners_) {
       for (var i = 0, listener; listener = this.draggingListeners_[i]; i++) {
-        google.maps.event.removeListener(listener);
+        this.google.maps.event.removeListener(listener);
       }
       this.draggingListeners_.length = 0;
     }
-  };
+  }
 
 
   /**
@@ -683,13 +663,13 @@ function _RichMarker(google, opt_options) {
    * @return {google.maps.Size} The size offset.
    * @private
    */
-  _RichMarker.prototype.getOffset_ = function () {
+  getOffset_ () {
     var anchor = this.getAnchor();
     if (typeof anchor == 'object') {
       return /** @type {google.maps.Size} */ (anchor);
     }
 
-    var offset = new google.maps.Size(0, 0);
+    var offset = new this.google.maps.Size(0, 0);
     if (!this.markerContent_) {
       return offset;
     }
@@ -731,14 +711,14 @@ function _RichMarker(google, opt_options) {
     }
 
     return offset;
-  };
+  }
 
 
   /**
    * Adding the marker to a map.
    * Implementing the interface.
    */
-  _RichMarker.prototype.onAdd = function () {
+  onAdd () {
     if (!this.markerWrapper_) {
       this.markerWrapper_ = document.createElement('DIV');
       this.markerWrapper_.style['position'] = 'absolute';
@@ -755,14 +735,14 @@ function _RichMarker(google, opt_options) {
       this.markerWrapper_.appendChild(this.markerContent_);
 
       var that = this;
-      google.maps.event.addDomListener(this.markerContent_, 'click', function (e) {
-        google.maps.event.trigger(that, 'click', e);
+      this.google.maps.event.addDomListener(this.markerContent_, 'click', function (e) {
+        this.google.maps.event.trigger(that, 'click', e);
       });
-      google.maps.event.addDomListener(this.markerContent_, 'mouseover', function (e) {
-        google.maps.event.trigger(that, 'mouseover', e);
+      this.google.maps.event.addDomListener(this.markerContent_, 'mouseover', function (e) {
+        this.google.maps.event.trigger(that, 'mouseover', e);
       });
-      google.maps.event.addDomListener(this.markerContent_, 'mouseout', function (e) {
-        google.maps.event.trigger(that, 'mouseout', e);
+      this.google.maps.event.addDomListener(this.markerContent_, 'mouseout', function (e) {
+        this.google.maps.event.trigger(that, 'mouseout', e);
       });
     }
 
@@ -776,15 +756,14 @@ function _RichMarker(google, opt_options) {
       panes.overlayMouseTarget.appendChild(this.markerWrapper_);
     }
 
-    google.maps.event.trigger(this, 'ready');
-  };
-  _RichMarker.prototype['onAdd'] = _RichMarker.prototype.onAdd;
+    this.google.maps.event.trigger(this, 'ready');
+  }
 
 
   /**
    * Impelementing the interface.
    */
-  _RichMarker.prototype.draw = function () {
+  draw () {
     if (!this.ready_ || this.dragging_) {
       return;
     }
@@ -813,22 +792,19 @@ function _RichMarker(google, opt_options) {
     if (height != this.get('height')) {
       this.set('height', height);
     }
-  };
-  _RichMarker.prototype['draw'] = _RichMarker.prototype.draw;
+  }
 
 
   /**
    * Removing a marker from the map.
    * Implementing the interface.
    */
-  _RichMarker.prototype.onRemove = function () {
+  onRemove () {
     if (this.markerWrapper_ && this.markerWrapper_.parentNode) {
       this.markerWrapper_.parentNode.removeChild(this.markerWrapper_);
     }
     this.removeDragListeners_();
-  };
-
-  _RichMarker.prototype['onRemove'] = _RichMarker.prototype.onRemove;
+  }
 
 }
 

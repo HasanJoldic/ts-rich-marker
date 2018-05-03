@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/paulparton/ts-rich-marker/issues"
   },
-  "homepage": "https://github.com/paulparton/ts-rich-marker#readme"
+  "homepage": "https://github.com/paulparton/ts-rich-marker#readme",
+  "devDependencies": {
+    "@types/googlemaps": "^3.30.8"
+  }
 }
