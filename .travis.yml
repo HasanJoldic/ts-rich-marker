@@ -10,7 +10,6 @@ before_install:
 install:
   - npm install
 before_script:
-- npm run test
 script:
 - ./ci/build.sh
 deploy:
