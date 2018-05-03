@@ -1,6 +1,8 @@
-**Please note:** This repository is not currently maintained, and is kept for historical purpose only.
 
-RichMarker – A Google Maps JavaScript API utility library
+#RichMarker TS
+
+This is a modified version of the RichMarker (A Google Maps JavaScript API utility library) modified to work with TypeScript
+
 ==============
 
 A library for using arbitrary DOM elements as map markers in the Google Maps JavaScript API v3.

@@ -19,8 +19,8 @@ var RichMarkerPosition = {
     'BOTTOM_RIGHT': 9
 };
 var RichMarker = /** @class */ (function () {
-    function RichMarker(opt_options) {
-        return new _RichMarker(opt_options);
+    function RichMarker(googleMapsApi, options) {
+        return new _RichMarker(googleMapsApi, options);
     }
     return RichMarker;
 }());
@@ -32,7 +32,7 @@ export { RichMarker };
  * @extends {google.maps.OverlayView}
  * @constructor
  */
-function _RichMarker(opt_options) {
+function _RichMarker(google, opt_options) {
     var options = opt_options || {};
     /**
      * @type {boolean}
