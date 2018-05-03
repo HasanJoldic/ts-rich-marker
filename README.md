@@ -1,5 +1,5 @@
 
-#RichMarker TS
+# RichMarker TS
 
 This is a modified version of the RichMarker (A Google Maps JavaScript API utility library) modified to work with TypeScript
 
