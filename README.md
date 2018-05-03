@@ -3,7 +3,16 @@
 
 This is a modified version of the RichMarker (A Google Maps JavaScript API utility library) modified to work with TypeScript
 
+## Install
+
+Before importing the class you need to have loaded the google maps api.
+
+```sh
+npm install googlemaps-ts-rich-marker
+```
+
 ==============
+# Original ReadMe...
 
 A library for using arbitrary DOM elements as map markers in the Google Maps JavaScript API v3.
 ![Analytics](https://maps-ga-beacon.appspot.com/UA-12846745-20/js-rich-marker/readme?pixel)
