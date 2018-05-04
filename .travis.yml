@@ -5,20 +5,17 @@ node_js:
 - '6'
 addons:
   chrome: stable
-before_install:
-  - npm install -g npm@5
 install:
-  - npm install
-before_script:
-script:
-- ./ci/build.sh
+- npm install
 deploy:
-- provider: script
-  script: ci/travis-deploy.sh
+  provider: npm
+  email: paul.parton@agriwebb.com
+  api_key:
+    secure: skpJ3ibpH5ruGgLYyqxNBoycSqUXXGerfeM6DW4XxUAvYQmWVmP5Li+2jmXcKgc8OCk2mUUbpmzzctf9tCW8Y2f4jBdm0/WPAFWXxCQ+mw9njNVnH0n80hPT5Xarwdj9g1pxMtmt7n+loLso+jveUWA1TEngc5po8nqVl3nJx6wppd3Sb93LuvSSzQCm443kbQo5EzfAuJWMFjosDBpwg7lm4nhQwGa2K+LY7x9CHZWLsnU/hzZqQxRYxLDxW7HWpSFtdrW160XBJu/JBHBNfkATnxeqjy9/88HSfd5E5JQId8cNXbgJ6os/tSEr/4wVzF0ppiLPKkccelTIWBI8sTqPJitDSOfcMBnGVg9qJbn5IksZBtYeFwfRG2RSxI+8UrGnPSCKbeEmXOkA+OSLvjG0J1Q0URf/21q3aTBKdAEwu7pLD0tTRUO9PjaeNrzSoeA6LmDbZgEVVI5qi1LmVZtn5gtqBLSkdEAuhFbv3dyD/vwTdTZ2kGn7QwLzyzrtlJvowxwBOnIKaQNFjFa6GQd0FTHpnd+i4S97XobZkNyG/jz3oeq1T0xoFVoHgSKQCXg1IyR9gEfFq6QvDRrVjr51HT00gxhH5KQ2VdGXK+3FpG7MewoFG3K4j+Uot8LKpc+fn1yK5z4pvYwvTJa5lA5EIlXV3zbMY2JdT9gSpsc=
   skip_cleanup: true
   on:
-    all_branches: true
-    condition: "$TRAVIS_BRANCH =~ (^(master|release).*$)"
+    tags: true
+    branch: production
 env:
   global:
   - NODE_VERSION=6.10.0
