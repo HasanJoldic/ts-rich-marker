@@ -735,13 +735,13 @@ export class RichMarker extends google.maps.OverlayView {
       this.markerWrapper_.appendChild(this.markerContent_);
 
       var that = this;
-      this.google.maps.event.addDomListener(this.markerContent_, 'click', function (e) {
+      this.google.maps.event.addDomListener(this.markerContent_, 'click',  (e) => {
         this.google.maps.event.trigger(that, 'click', e);
       });
-      this.google.maps.event.addDomListener(this.markerContent_, 'mouseover', function (e) {
+      this.google.maps.event.addDomListener(this.markerContent_, 'mouseover',  (e) => {
         this.google.maps.event.trigger(that, 'mouseover', e);
       });
-      this.google.maps.event.addDomListener(this.markerContent_, 'mouseout', function (e) {
+      this.google.maps.event.addDomListener(this.markerContent_, 'mouseout',  (e) => {
         this.google.maps.event.trigger(that, 'mouseout', e);
       });
     }
