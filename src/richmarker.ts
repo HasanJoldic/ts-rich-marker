@@ -21,8 +21,6 @@
  * limitations under the License.
  */
 
-import { } from "googlemaps";
-
 /**
  * RichMarker Anchor positions
  * @enum {number}
@@ -718,7 +716,7 @@ export class RichMarker extends google.maps.OverlayView {
    * Adding the marker to a map.
    * Implementing the interface.
    */
-  onAdd () {
+  public onAdd () {
     if (!this.markerWrapper_) {
       this.markerWrapper_ = document.createElement('DIV');
       this.markerWrapper_.style['position'] = 'absolute';
